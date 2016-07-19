@@ -1,0 +1,77 @@
+<?php
+
+function auto_menu() {
+  $items = array();
+
+  $items['auto/rating'] = array( //this creates a URL that will call this form at "examples/form-example"
+    'title' => 'Rating Form', //page title
+    'description' => 'A form to mess around with.',
+    'page callback' => 'drupal_get_form', //this is the function that will be called when the page is accessed.  for a form, use drupal_get_form
+    'page arguments' => array('auto_form'), //put the name of the form here
+    'access callback' => TRUE
+  );
+
+  return $items;
+}
+
+/**
+ * Implements auto_form().
+ */
+function auto_form($form, &$form_state) { 
+	 
+  $form['nid'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Node ID',    
+      '#maxlength' => 15,
+      '#size' => 15,      
+  );
+
+  $form['rating'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Rating',    
+      '#maxlength' => 15,
+      '#size' => 15,      
+  ); 
+  $form['test_flag'] = array(
+      '#type' => 'textfield',
+      '#title' => 'Test Flag',    
+      '#maxlength' => 15,
+      '#size' => 15,    
+        
+  ); 
+  $form['save'] = array(
+      '#type' => 'submit',
+      '#value' =>  'Save',
+      '#submit' =>  array('auto_form_submit'),
+      '#validate' =>  array('auto_form_validate'),
+  );
+
+  return $form;
+}
+
+/**
+ * Implements auto_form_validate().
+ */
+function auto_form_validate($form, $form_state) {
+	 
+    if ($form_state['values']['nid'] == '') {
+      form_set_error('nid', 'Please Enter Node ID');
+    }
+    if ($form_state['values']['rating'] == '') {
+      form_set_error('rating', 'Please Enter Rating');
+    }
+     
+  
+}
+
+function auto_form_submit($form, $form_state) {
+global $user;
+// Here u can insert Your custom form values into your custom table.
+db_insert('node_rating')
+
+->fields(array('nid' => $form_state['values']['nid'],'rating' => $form_state['values']['rating'],'test_flag' => $form_state['values']['test_flag'],))->execute();
+
+drupal_set_message("successfully saved Departments Info");
+}
+  
+?>

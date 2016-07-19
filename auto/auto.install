@@ -1,0 +1,65 @@
+<?php
+/**
+ * Implements hook_schema().
+ */
+function auto_schema() {
+  $schema['node_rating'] = array(
+    // This explains purpose of this table.
+    'description' => 'Table to keep rating for a node',
+
+    // This array keeps information about the fields in this table.
+    'fields' => array(
+      'rid' => array(
+        'description' => 'The primary identifier for a rating.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'nid' => array(
+        'description' => '{node}.nid of node to which this rating applicable.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'rating' => array(
+        'description' => 'Rating for a node',
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => -1,
+      ),
+    ),
+    // Index 'rating' field to speed up retrieval of rows based on rating.
+    'indexes' => array(
+      'rating' => array('rating'),
+    ),
+    'unique keys' => array(
+      'nid' => array('nid'),
+    ),
+    'foreign keys' => array(
+      // This table contains a reference field to node table.
+      // 'nid' field of this  table references a row in {node} table.
+      'node' => array(
+        'table' => 'node',
+        'columns' => array('nid' => 'nid'),
+      ),
+    ),
+    'primary key' => array('rid'),
+  );
+
+  return $schema;
+}
+/**
+* Add test_flag fields to the {node_rating} table.
+*/
+function auto_update_7001() {
+  db_add_field(
+    'node_rating', 
+    'test_flag', 
+    array(
+      'type' => 'int', 
+      'size' => 'tiny', 
+      'not null' =>TRUE, 
+      'default' => 0,
+    )
+  );
+}
